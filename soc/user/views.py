@@ -6,6 +6,9 @@ from rest_framework.response import Response
 
 class RegisterView(BaseRegisterView):
     def create(self, request, *args, **kwargs):
+        """
+        Default create function with clearbit enrichment
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
