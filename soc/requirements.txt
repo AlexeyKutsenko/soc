@@ -1,4 +1,5 @@
-Django>=3.0,<4.0
+clearbit==0.1.7
+Django==3.1.4
 django-allauth==0.44.0
 django-filter==2.4.0
 django-rest-auth==0.9.5
