@@ -48,7 +48,8 @@ THIRD_PARTY_APPS = [
 ]
 
 APPS = [
-    'user'
+    'user',
+    'post'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + APPS
