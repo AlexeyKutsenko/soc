@@ -15,12 +15,12 @@ class RegisterView(BaseRegisterView):
         user = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        clearbit_enrich = clearbit.Enrichment.find(email=request.data.get('email'), stream=True)
         try:
+            clearbit_enrich = clearbit.Enrichment.find(email=request.data.get('email'), stream=True)
             user.first_name = clearbit_enrich['person'].get('name').get('givenName')
             user.last_name = clearbit_enrich['person'].get('name').get('familyName')
             user.save()
-        except TypeError:
+        except Exception:
             pass
 
         return Response(self.get_response_data(user),
