@@ -8,13 +8,13 @@ class Post(models.Model):
 
 
 class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    unique_together = [['post', 'user']]
 
     class Meta:
         indexes = [
             models.Index(fields=['post']),
             models.Index(fields=['user'])
         ]
+
+        unique_together = [['post_id', 'user_id']]
