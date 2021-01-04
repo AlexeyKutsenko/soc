@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from pyhunter import PyHunter
+from pyhunter.exceptions import HunterApiError
 from rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
 from rest_framework import serializers
 
@@ -14,9 +15,12 @@ class RegisterSerializer(BaseRegisterSerializer):
         api_key = os.environ.get('HUNTER_KEY')
         if api_key:
             hunter = PyHunter(api_key)
-            disposable = hunter.email_verifier(email).get('disposable')
-            if disposable:
-                raise serializers.ValidationError('Disposable email')
+            try:
+                disposable = hunter.email_verifier(email).get('disposable')
+                if disposable:
+                    raise serializers.ValidationError('Disposable email')
+            except HunterApiError:
+                pass
         return email
 
     def create(self, validated_data):

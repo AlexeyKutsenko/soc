@@ -1,6 +1,5 @@
 import json
-import pdb
-from random import random, randint
+from random import randint, choice
 
 from django.conf import settings
 from django.http import HttpRequest
@@ -9,7 +8,7 @@ from rest_framework import status
 
 from bot.tests.base import BaseTestCase
 from bot.tests.factories import UserFactory, PostFactory
-from post.models import Post
+from post.models import Post, Like
 from user.models import User
 
 
@@ -40,13 +39,25 @@ class Bot(BaseTestCase):
             users.append(user)
         self.assertEqual(User.objects.count(), self.number_of_users)
 
-        create_post_url = reverse('post-list')
+        post_url = reverse('post-list')
         for user in users:
             self.client.login(request=HttpRequest(), username=user.username, password=user.password)
-            posts = [PostFactory() for _ in range(randint(1, self.max_posts_per_user))]
+            posts = [PostFactory.build() for _ in range(randint(1, self.max_posts_per_user))]
             for post in posts:
-                response = self.client.post(create_post_url, {'description': post.description})
+                response = self.client.post(post_url, {'description': post.description})
                 self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         average_posts_per_user = Post.objects.count() / self.number_of_users
         self.assertLess(average_posts_per_user, self.max_posts_per_user)
+
+        for user in users:
+            self.client.login(request=HttpRequest(), username=user.username, password=user.password)
+            posts_list = self.client.get(post_url)
+            for _ in range(self.max_likes_per_user):
+                post = choice(posts_list.data)
+                like_url = reverse('post-like', kwargs={'pk': post['id']})
+                response = self.client.post(like_url)
+                self.assertIn(response.status_code, [status.HTTP_201_CREATED, status.HTTP_204_NO_CONTENT])
+
+        average_likes_per_user = Like.objects.count() / self.number_of_users
+        self.assertLess(average_likes_per_user, self.max_likes_per_user)
