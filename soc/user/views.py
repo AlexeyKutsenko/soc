@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 
 class RegisterView(BaseRegisterView):
+
     def create(self, request, *args, **kwargs):
         """
         Default create function with clearbit enrichment

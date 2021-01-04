@@ -143,6 +143,10 @@ AUTH_USER_MODEL = 'user.User'
 REST_USE_JWT = True
 SITE_ID = 1
 
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'user.serializers.RegisterSerializer'
+}
+
 REST_FRAMEWORK = {
     # auth
     'DEFAULT_PERMISSION_CLASSES': (
